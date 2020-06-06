@@ -26,19 +26,7 @@ export class AuthService {
                 password: password,
                 returnSecureToken: true
             }
-        ).pipe(catchError(errorRes => {
-            let errorMessage = 'An unknown error occurred!';
-            if (!errorRes.error || !errorRes.error.error) {
-                return throwError(errorMessage);
-            }
-
-            switch (errorRes.error.error.message) {
-                case 'EMAIL_EXISTS':
-                errorMessage = 'This email exists already';
-            }
-
-            return throwError(errorMessage);
-        }));
+        ).pipe(catchError(this.handleError));
     }
 
     signin(email: string, password: string) {
@@ -48,18 +36,26 @@ export class AuthService {
             email: email,
             password: password,
             returnSecureToken: true
-        }).pipe(catchError(errorRes => {
-            let errorMessage = 'An unknown error occurred!';
-            if (!errorRes.error || !errorRes.error.error) {
-                return throwError(errorMessage);
-            }
+        }).pipe(catchError(this.handleError));
+    }
 
-            switch (errorRes.error.error.message) {
-                case 'EMAIL_EXISTS':
-                errorMessage = 'This email exists already';
-            }
-
+    private handleError(errorRes: HttpErrorResponse) {
+        let errorMessage = 'An unknown error occurred!';
+        if (!errorRes.error || !errorRes.error.error) {
             return throwError(errorMessage);
-        }));
+        }
+
+        switch (errorRes.error.error.message) {
+            case 'EMAIL_EXISTS':
+                errorMessage = 'This email exists already';
+                break;
+            case 'EMAIL_NOT_FOUND':
+                errorMessage = 'This email does not exist';
+                break;
+            case 'INVALID_PASSWORD':
+                errorMessage = 'Password is not correct';
+        }
+
+        return throwError(errorMessage);
     }
 }
