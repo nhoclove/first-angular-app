@@ -1,6 +1,6 @@
 import { Injectable } from '@angular/core';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
-import { throwError, Subject } from 'rxjs';
+import { throwError, BehaviorSubject } from 'rxjs';
 
 import { AppSettings } from '../app-settings';
 import { catchError, tap } from 'rxjs/operators';
@@ -17,7 +17,7 @@ export interface AuthResponseData {
 @Injectable({providedIn: 'root'})
 export class AuthService {
 
-    user = new Subject<User>();
+    user = new BehaviorSubject<User>(null);
 
     constructor(private http: HttpClient) {}
 
@@ -67,7 +67,7 @@ export class AuthService {
     }
 
     private handleAuthentication(email: string, id: string, token: string, expiresIn: number) {
-        const expirationDate = new Date(new Date().getTime() + expiresIn);
+        const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
         const user = new User(email, id, token, expirationDate);
         this.user.next(user);
     }
