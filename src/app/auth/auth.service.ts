@@ -1,4 +1,5 @@
 import { Injectable } from '@angular/core';
+import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { throwError, BehaviorSubject } from 'rxjs';
 
@@ -19,7 +20,7 @@ export class AuthService {
 
     user = new BehaviorSubject<User>(null);
 
-    constructor(private http: HttpClient) {}
+    constructor(private http: HttpClient, private router: Router) {}
 
     signup(email: string, password: string) {
         return this.http.post<AuthResponseData>(
@@ -44,6 +45,11 @@ export class AuthService {
         }).pipe(catchError(this.handleError), tap(resData => {
             this.handleAuthentication(resData.email, resData.localId, resData.idToken, +resData.expiresIn);
         }));
+    }
+
+    signout() {
+        this.user.next(null);
+        this.router.navigate(['/auth']);
     }
 
     private handleError(errorRes: HttpErrorResponse) {
