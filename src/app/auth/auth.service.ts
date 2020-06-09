@@ -2,9 +2,9 @@ import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
 import { HttpClient, HttpErrorResponse } from '@angular/common/http';
 import { throwError, BehaviorSubject } from 'rxjs';
+import { catchError, tap } from 'rxjs/operators';
 
 import { AppSettings } from '../app-settings';
-import { catchError, tap } from 'rxjs/operators';
 import { User } from './user.model';
 
 export interface AuthResponseData {
@@ -47,6 +47,24 @@ export class AuthService {
         }));
     }
 
+    autoLogin() {
+        const userData: {
+            email: string,
+            id: string,
+            _token: string,
+            _tokenExpirationDate: string
+        } = JSON.parse(localStorage.getItem('userData'));
+
+        if (!userData) {
+            return;
+        }
+
+        const loadedUser = new User(userData.email, userData.id, userData._token, new Date(userData._tokenExpirationDate));
+        if (loadedUser.token) {
+            this.user.next(loadedUser);
+        }
+    }
+
     signout() {
         this.user.next(null);
         this.router.navigate(['/auth']);
@@ -76,5 +94,6 @@ export class AuthService {
         const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
         const user = new User(email, id, token, expirationDate);
         this.user.next(user);
+        localStorage.setItem('userData', JSON.stringify(user));
     }
 }
