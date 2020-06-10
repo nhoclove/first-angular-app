@@ -1,9 +1,11 @@
-import { Component } from '@angular/core';
+import { Component, ComponentFactoryResolver, ViewChild } from '@angular/core';
+import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
+import { Observable, Subscription } from 'rxjs';
 
 import { AuthService, AuthResponseData } from './auth.service';
-import { Router } from '@angular/router';
-import { Observable } from 'rxjs';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { PlaceHolderDirective } from '../shared/placeholder/placeholder.directive';
 
 @Component({
     selector: 'app-auth',
@@ -13,8 +15,15 @@ export class AuthComponent {
     isLoginMode = true;
     isLoading = false;
     error: string = null;
+    @ViewChild(PlaceHolderDirective) alertHost: PlaceHolderDirective;
 
-    constructor(private authService: AuthService, private router: Router) {}
+    private closeSub: Subscription;
+
+    constructor(
+        private authService: AuthService,
+        private router: Router,
+        private componentFactoryResolver: ComponentFactoryResolver
+    ) {}
 
     switchMode() {
         this.isLoginMode = !this.isLoginMode;
@@ -45,6 +54,7 @@ export class AuthComponent {
             }, errorMessage => {
                 console.log(errorMessage);
                 this.error = errorMessage;
+                this.showErrorAlert(this.error);
                 this.isLoading = false;
             }
         );
@@ -54,5 +64,17 @@ export class AuthComponent {
 
     onHandleError() {
         this.error = null;
+    }
+
+    showErrorAlert(message: string) {
+        const alertCmpFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
+        this.alertHost.viewContainerRef.clear();
+        const componentRef = this.alertHost.viewContainerRef.createComponent(alertCmpFactory);
+
+        componentRef.instance.message = message;
+        this.closeSub = componentRef.instance.close.subscribe(() => {
+            this.closeSub.unsubscribe();
+            this.alertHost.viewContainerRef.clear();
+        });
     }
 }
