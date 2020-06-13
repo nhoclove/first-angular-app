@@ -7,7 +7,7 @@ import { AuthComponent } from './auth.component';
 import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner.component';
 
 const routes: Routes = [
-    { path: 'auth', component: AuthComponent},
+    { path: '', component: AuthComponent},
 ];
 
 @NgModule({
