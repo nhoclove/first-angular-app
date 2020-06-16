@@ -27,13 +27,20 @@ export function shoppingListReducer(state = initialState, action: ShoppingListAc
             const updatedIngredient = {
                 ...ingredient,
                 ...action.payload.ingredient
-            }
+            };
             const updatedIngredients = [...state.ingredients];
             updatedIngredients[action.payload.index] = updatedIngredient;
 
             return {
                 ...state,
                 ingredients: updatedIngredients,
+            };
+        case ShoppingListActions.DELETE_INGREDIENT:
+            return {
+                ...state,
+                ingredients: state.ingredients.filter((ig, igIndex) => {
+                    return igIndex !== action.payload;
+                })
             };
         default:
             return state;
