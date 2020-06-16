@@ -3,7 +3,8 @@ import { Action } from '@ngrx/store';
 import { Ingredient } from 'src/app/shared/ingredient.model';
 
 export const ADD_INGREDIENT = 'ADD_INGREDIENT';
-export const ADD_INGREDIENTS = 'ADD_INGREDIENTs';
+export const ADD_INGREDIENTS = 'ADD_INGREDIENTS';
+export const UPDATE_INGREDIENT = 'UPDATE_INGREDIENT';
 
 export class AddIngredient implements Action {
     readonly type = ADD_INGREDIENT;
@@ -17,4 +18,10 @@ export class AddIngredients implements Action {
     constructor(public payload: Ingredient[]) {}
 }
 
-export type ShoppingListActions = AddIngredient | AddIngredients;
+export class UpdateIngredient implements Action {
+    readonly type = UPDATE_INGREDIENT;
+
+    constructor(public payload: { index: number, ingredient: Ingredient }) {}
+}
+
+export type ShoppingListActions = AddIngredient | AddIngredients | UpdateIngredient;
