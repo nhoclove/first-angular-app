@@ -13,7 +13,7 @@ import { RecipeService } from './recipes/recipe.service';
 import { AuthInterceptorService } from './auth/auth-interceptor.service';
 import { AlertComponent } from './shared/alert/alert.component';
 import { PlaceHolderDirective } from './shared/placeholder/placeholder.directive';
-import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+import { AppReducer } from './store/app.reducer';
 
 @NgModule({
   declarations: [
@@ -26,7 +26,7 @@ import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer
   imports: [
     BrowserModule,
     AppRoutingModule,
-    StoreModule.forRoot({shoppingList: shoppingListReducer}),
+    StoreModule.forRoot(AppReducer),
     HttpClientModule,
     ReactiveFormsModule,
   ],
