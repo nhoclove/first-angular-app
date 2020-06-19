@@ -1,4 +1,10 @@
-import { Component, ComponentFactoryResolver, ViewChild, OnInit, OnDestroy } from '@angular/core';
+import {
+  Component,
+  ComponentFactoryResolver,
+  ViewChild,
+  OnInit,
+  OnDestroy,
+} from '@angular/core';
 import { Router } from '@angular/router';
 import { NgForm } from '@angular/forms';
 import { Observable, Subscription } from 'rxjs';
@@ -11,86 +17,86 @@ import * as fromApp from '../store/app.reducer';
 import * as AuthActions from './store/auth.actions';
 
 @Component({
-    selector: 'app-auth',
-    templateUrl: './auth.component.html'
+  selector: 'app-auth',
+  templateUrl: './auth.component.html',
 })
 export class AuthComponent implements OnInit, OnDestroy {
-    isLoginMode = true;
-    isLoading = false;
-    error: string = null;
-    @ViewChild(PlaceHolderDirective) alertHost: PlaceHolderDirective;
+  isLoginMode = true;
+  isLoading = false;
+  error: string = null;
+  @ViewChild(PlaceHolderDirective) alertHost: PlaceHolderDirective;
 
-    private closeSub: Subscription;
+  private closeSub: Subscription;
+  private storeSub: Subscription;
 
-    constructor(
-        private authService: AuthService,
-        private router: Router,
-        private componentFactoryResolver: ComponentFactoryResolver,
-        private store: Store<fromApp.AppState>
-    ) {}
+  constructor(
+    private authService: AuthService,
+    private router: Router,
+    private componentFactoryResolver: ComponentFactoryResolver,
+    private store: Store<fromApp.AppState>
+  ) {}
 
-    ngOnInit() {
-        this.store.select('auth').subscribe(authState => {
-            this.isLoading = authState.loading;
-            this.error = authState.authError;
-        });
+  ngOnInit() {
+    this.storeSub = this.store.select('auth').subscribe((authState) => {
+      this.isLoading = authState.loading;
+      this.error = authState.authError;
+      if (this.error) {
+        this.showErrorAlert(this.error);
+      }
+    });
+  }
+
+  switchMode() {
+    this.isLoginMode = !this.isLoginMode;
+  }
+
+  onSubmit(form: NgForm) {
+    if (!form.valid) {
+      return;
     }
 
-    switchMode() {
-        this.isLoginMode = !this.isLoginMode;
+    const email = form.value.email;
+    const password = form.value.password;
+    this.isLoading = true;
+
+    if (this.isLoginMode) {
+      // authObs = this.authService.signin(email, password);
+      this.store.dispatch(
+        new AuthActions.LoginStart({ email: email, password: password })
+      );
+    } else {
+      // authObs = this.authService.signup(email, password);
+      this.store.dispatch(
+        new AuthActions.SignupStart({ email: email, password: password })
+      );
     }
 
-    onSubmit(form: NgForm) {
-        if (!form.valid) {
-            return;
-        }
+    form.reset();
+  }
 
-        const email = form.value.email;
-        const password = form.value.password;
-        this.isLoading = true;
+  onHandleError() {
+    this.store.dispatch(new AuthActions.ClearError());
+  }
 
-        let authObs: Observable<AuthResponseData>;
+  showErrorAlert(message: string) {
+    const alertCmpFactory = this.componentFactoryResolver.resolveComponentFactory(
+      AlertComponent
+    );
+    this.alertHost.viewContainerRef.clear();
+    const componentRef = this.alertHost.viewContainerRef.createComponent(
+      alertCmpFactory
+    );
 
-        if (this.isLoginMode) {
-            // authObs = this.authService.signin(email, password);
-            this.store.dispatch(
-                new AuthActions.LoginStart({ email: email, password: password })
-            );
-        } else {
-            authObs = this.authService.signup(email, password);
-        }
+    componentRef.instance.message = message;
+    this.closeSub = componentRef.instance.close.subscribe(() => {
+      this.closeSub.unsubscribe();
+      this.alertHost.viewContainerRef.clear();
+    });
+  }
 
-        // authObs.subscribe(
-        //     (resData) => {
-        //         console.log(resData);
-        //         this.isLoading = false;
-        //         this.router.navigate(['/recipes']);
-        //     }, errorMessage => {
-        //         console.log(errorMessage);
-        //         this.error = errorMessage;
-        //         this.showErrorAlert(this.error);
-        //         this.isLoading = false;
-        //     }
-        // );
-
-        form.reset();
+  ngOnDestroy() {
+    if (this.storeSub) {
+      this.storeSub.unsubscribe();
     }
-
-    onHandleError() {
-        this.error = null;
-    }
-
-    showErrorAlert(message: string) {
-        const alertCmpFactory = this.componentFactoryResolver.resolveComponentFactory(AlertComponent);
-        this.alertHost.viewContainerRef.clear();
-        const componentRef = this.alertHost.viewContainerRef.createComponent(alertCmpFactory);
-
-        componentRef.instance.message = message;
-        this.closeSub = componentRef.instance.close.subscribe(() => {
-            this.closeSub.unsubscribe();
-            this.alertHost.viewContainerRef.clear();
-        });
-    }
-
-    ngOnDestroy() {}
+  }
 }
