@@ -1,12 +1,12 @@
-import { Router } from "@angular/router";
-import { Injectable } from "@angular/core";
-import { Actions, ofType, Effect } from "@ngrx/effects";
-import { switchMap, catchError, map, tap } from "rxjs/operators";
-import { HttpClient } from "@angular/common/http";
-import { of } from "rxjs";
+import { Router } from '@angular/router';
+import { Injectable } from '@angular/core';
+import { Actions, ofType, Effect } from '@ngrx/effects';
+import { switchMap, catchError, map, tap } from 'rxjs/operators';
+import { HttpClient } from '@angular/common/http';
+import { of } from 'rxjs';
 
-import * as AuthActions from "./auth.actions";
-import { AppSettings } from "src/app/app-settings";
+import * as AuthActions from './auth.actions';
+import { AppSettings } from 'src/app/app-settings';
 
 export interface AuthResponseData {
   idToken: string;
@@ -33,20 +33,20 @@ const handleAuthentication = (
 };
 
 const handleError = (errorRes) => {
-  let errorMessage = "An unknown error occurred!";
+  let errorMessage = 'An unknown error occurred!';
   if (!errorRes.error || !errorRes.error.error) {
     return of(new AuthActions.AuthenticateFail(errorMessage));
   }
 
   switch (errorRes.error.error.message) {
-    case "EMAIL_EXISTS":
-      errorMessage = "This email exists already";
+    case 'EMAIL_EXISTS':
+      errorMessage = 'This email exists already';
       break;
-    case "EMAIL_NOT_FOUND":
-      errorMessage = "This email does not exist";
+    case 'EMAIL_NOT_FOUND':
+      errorMessage = 'This email does not exist';
       break;
-    case "INVALID_PASSWORD":
-      errorMessage = "Password is not correct";
+    case 'INVALID_PASSWORD':
+      errorMessage = 'Password is not correct';
   }
 
   return of(new AuthActions.AuthenticateFail(errorMessage));
@@ -60,7 +60,7 @@ export class AuthEffects {
     switchMap((signupAction: AuthActions.SignupStart) => {
       return this.http
         .post<AuthResponseData>(
-          "https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=" +
+          'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=' +
             AppSettings.FIREBASE_KEY,
           {
             email: signupAction.payload.email,
@@ -90,7 +90,7 @@ export class AuthEffects {
     switchMap((authData: AuthActions.LoginStart) => {
       return this.http
         .post<AuthResponseData>(
-          "https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=" +
+          'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=' +
             AppSettings.FIREBASE_KEY,
           {
             email: authData.payload.email,
@@ -122,10 +122,10 @@ export class AuthEffects {
   ) {}
 
   @Effect({ dispatch: false })
-  authSuccess = this.actions$.pipe(
-    ofType(AuthActions.AUTHENTICATE_SUCCESS),
+  authRedirect = this.actions$.pipe(
+    ofType(AuthActions.AUTHENTICATE_SUCCESS, AuthActions.LOGOUT),
     tap(() => {
-      this.router.navigate(["/"]);
+      this.router.navigate(['/']);
     })
   );
 }

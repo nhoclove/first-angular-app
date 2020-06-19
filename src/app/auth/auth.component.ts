@@ -4,21 +4,21 @@ import {
   ViewChild,
   OnInit,
   OnDestroy,
-} from "@angular/core";
-import { Router } from "@angular/router";
-import { NgForm } from "@angular/forms";
-import { Observable, Subscription } from "rxjs";
-import { Store } from "@ngrx/store";
+} from '@angular/core';
+import { Router } from '@angular/router';
+import { NgForm } from '@angular/forms';
+import { Observable, Subscription } from 'rxjs';
+import { Store } from '@ngrx/store';
 
-import { AuthService, AuthResponseData } from "./auth.service";
-import { AlertComponent } from "../shared/alert/alert.component";
-import { PlaceHolderDirective } from "../shared/placeholder/placeholder.directive";
-import * as fromApp from "../store/app.reducer";
-import * as AuthActions from "./store/auth.actions";
+import { AuthService, AuthResponseData } from './auth.service';
+import { AlertComponent } from '../shared/alert/alert.component';
+import { PlaceHolderDirective } from '../shared/placeholder/placeholder.directive';
+import * as fromApp from '../store/app.reducer';
+import * as AuthActions from './store/auth.actions';
 
 @Component({
-  selector: "app-auth",
-  templateUrl: "./auth.component.html",
+  selector: 'app-auth',
+  templateUrl: './auth.component.html',
 })
 export class AuthComponent implements OnInit, OnDestroy {
   isLoginMode = true;
@@ -27,6 +27,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   @ViewChild(PlaceHolderDirective) alertHost: PlaceHolderDirective;
 
   private closeSub: Subscription;
+  private storeSub: Subscription;
 
   constructor(
     private authService: AuthService,
@@ -36,7 +37,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   ) {}
 
   ngOnInit() {
-    this.store.select("auth").subscribe((authState) => {
+    this.storeSub = this.store.select('auth').subscribe((authState) => {
       this.isLoading = authState.loading;
       this.error = authState.authError;
       if (this.error) {
@@ -58,8 +59,6 @@ export class AuthComponent implements OnInit, OnDestroy {
     const password = form.value.password;
     this.isLoading = true;
 
-    let authObs: Observable<AuthResponseData>;
-
     if (this.isLoginMode) {
       // authObs = this.authService.signin(email, password);
       this.store.dispatch(
@@ -76,7 +75,7 @@ export class AuthComponent implements OnInit, OnDestroy {
   }
 
   onHandleError() {
-    this.error = null;
+    this.store.dispatch(new AuthActions.ClearError());
   }
 
   showErrorAlert(message: string) {
@@ -95,5 +94,9 @@ export class AuthComponent implements OnInit, OnDestroy {
     });
   }
 
-  ngOnDestroy() {}
+  ngOnDestroy() {
+    if (this.storeSub) {
+      this.storeSub.unsubscribe();
+    }
+  }
 }
