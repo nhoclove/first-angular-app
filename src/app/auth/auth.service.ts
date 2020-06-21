@@ -8,7 +8,7 @@ import { Store } from '@ngrx/store';
 import { AppSettings } from '../app-settings';
 import { User } from './user.model';
 import * as fromApp from '../store/app.reducer';
-import { Login, Logout } from './store/auth.actions';
+import { Logout, AuthenticateSuccess } from './store/auth.actions';
 
 export interface AuthResponseData {
   idToken: string;
@@ -98,7 +98,7 @@ export class AuthService {
     if (loadedUser.token) {
       // this.user.next(loadedUser);
       this.store.dispatch(
-        new Login({
+        new AuthenticateSuccess({
           email: loadedUser.email,
           userId: loadedUser.id,
           token: loadedUser.token,
@@ -158,7 +158,7 @@ export class AuthService {
     const user = new User(email, id, token, expirationDate);
     // this.user.next(user);
     this.store.dispatch(
-      new Login({
+      new AuthenticateSuccess({
         email: email,
         userId: id,
         token: token,
