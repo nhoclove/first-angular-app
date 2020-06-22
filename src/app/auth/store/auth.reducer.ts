@@ -1,6 +1,6 @@
-import { User } from "../user.model";
-import * as AuthActions from "./auth.actions";
-import { Actions } from "@ngrx/effects";
+import { User } from '../user.model';
+import * as AuthActions from './auth.actions';
+import { Actions } from '@ngrx/effects';
 
 export interface State {
   user: User;
