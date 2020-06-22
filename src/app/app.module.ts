@@ -4,6 +4,7 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
 
 import { AppRoutingModule } from './app-routing.module';
 import { AppComponent } from './app.component';
@@ -17,6 +18,7 @@ import { PlaceHolderDirective } from './shared/placeholder/placeholder.directive
 import { AppReducer } from './store/app.reducer';
 import { AuthEffects } from './auth/store/auth.effects';
 import { RecipeEffects } from './recipes/store/recipe.effects';
+import { environment } from 'src/environments/environment';
 
 @NgModule({
   declarations: [
@@ -31,6 +33,7 @@ import { RecipeEffects } from './recipes/store/recipe.effects';
     AppRoutingModule,
     StoreModule.forRoot(AppReducer),
     EffectsModule.forRoot([AuthEffects, RecipeEffects]),
+    StoreDevtoolsModule.instrument({ logOnly: environment.production }),
     HttpClientModule,
     ReactiveFormsModule,
   ],
