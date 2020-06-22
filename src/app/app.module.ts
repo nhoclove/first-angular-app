@@ -1,7 +1,7 @@
 import { BrowserModule } from '@angular/platform-browser';
 import { NgModule } from '@angular/core';
 import { ReactiveFormsModule } from '@angular/forms';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http'; 
+import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { StoreModule } from '@ngrx/store';
 import { EffectsModule } from '@ngrx/effects';
 
@@ -16,6 +16,7 @@ import { AlertComponent } from './shared/alert/alert.component';
 import { PlaceHolderDirective } from './shared/placeholder/placeholder.directive';
 import { AppReducer } from './store/app.reducer';
 import { AuthEffects } from './auth/store/auth.effects';
+import { RecipeEffects } from './recipes/store/recipe.effects';
 
 @NgModule({
   declarations: [
@@ -29,7 +30,7 @@ import { AuthEffects } from './auth/store/auth.effects';
     BrowserModule,
     AppRoutingModule,
     StoreModule.forRoot(AppReducer),
-    EffectsModule.forRoot([AuthEffects]),
+    EffectsModule.forRoot([AuthEffects, RecipeEffects]),
     HttpClientModule,
     ReactiveFormsModule,
   ],
@@ -40,11 +41,9 @@ import { AuthEffects } from './auth/store/auth.effects';
       provide: HTTP_INTERCEPTORS,
       useClass: AuthInterceptorService,
       multi: true,
-    }
+    },
   ],
   bootstrap: [AppComponent],
-  entryComponents: [
-    AlertComponent,
-  ]
+  entryComponents: [AlertComponent],
 })
-export class AppModule { }
+export class AppModule {}
