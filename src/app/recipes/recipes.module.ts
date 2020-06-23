@@ -12,20 +12,20 @@ import { RecipeEditComponent } from './recipe-edit/recipe-edit.component';
 import { RecipesRoutingModule } from './recipes-routing.module';
 
 @NgModule({
-    declarations: [
-        RecipesComponent,
-        RecipeListComponent,
-        RecipeDetailComponent,
-        RecipeItemComponent,
-        RecipeStartComponent,
-        RecipeEditComponent,
-    ],
-    imports: [
-        RouterModule,
-        CommonModule,
-        ReactiveFormsModule,
-        RecipesRoutingModule,
-    ]
+  declarations: [
+    RecipesComponent,
+    RecipeListComponent,
+    RecipeDetailComponent,
+    RecipeItemComponent,
+    RecipeStartComponent,
+    RecipeEditComponent,
+  ],
+  imports: [
+    RouterModule,
+    CommonModule,
+    ReactiveFormsModule,
+    RecipesRoutingModule,
+  ],
+  exports: [],
 })
-export class RecipesModule {
-}
+export class RecipesModule {}
