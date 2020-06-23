@@ -7,6 +7,7 @@ import { map } from 'rxjs/operators';
 import { RecipeService } from '../recipe.service';
 import { Recipe } from '../recipe.model';
 import * as fromApp from '../../store/app.reducer';
+import * as RecipeActions from '../store/recipe.actions';
 
 @Component({
   selector: 'app-recipe-edit',
@@ -102,9 +103,13 @@ export class RecipeEditComponent implements OnInit {
       this.recipeForm.value['ingredients']
     );
     if (this.editMode) {
-      this.recipeService.updateRecipe(this.id, recipe);
+      // this.recipeService.updateRecipe(this.id, recipe);
+      this.store.dispatch(
+        new RecipeActions.UpdateRecipes({ index: this.id, recipe: recipe })
+      );
     } else {
-      this.recipeService.addRecipe(recipe);
+      // this.recipeService.addRecipe(recipe);
+      this.store.dispatch(new RecipeActions.AddRecipes(recipe));
     }
 
     this.onCancel();

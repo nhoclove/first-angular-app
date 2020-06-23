@@ -4,25 +4,19 @@ import { FormsModule, ReactiveFormsModule } from '@angular/forms';
 import { CommonModule } from '@angular/common';
 
 import { AuthComponent } from './auth.component';
-import { LoadingSpinnerComponent } from '../shared/loading-spinner/loading-spinner.component';
+import { SharedModule } from '../shared/shared.module';
 
-const routes: Routes = [
-    { path: '', component: AuthComponent},
-];
+const routes: Routes = [{ path: '', component: AuthComponent }];
 
 @NgModule({
-    declarations: [
-        AuthComponent,
-        LoadingSpinnerComponent,
-    ],
-    imports: [
-        CommonModule,
-        FormsModule,
-        ReactiveFormsModule,
-        RouterModule.forChild(routes),
-    ],
-    exports: [],
+  declarations: [AuthComponent],
+  imports: [
+    CommonModule,
+    FormsModule,
+    ReactiveFormsModule,
+    RouterModule.forChild(routes),
+    SharedModule,
+  ],
+  exports: [],
 })
-export class AuthModule {
-
-}
+export class AuthModule {}
